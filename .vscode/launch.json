@@ -8,7 +8,7 @@
             "name": "(Windows) Launch",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/target/debug/keyboard_input_test.exe",
+            "program": "${workspaceRoot}/target/debug/keyboard_melee.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
