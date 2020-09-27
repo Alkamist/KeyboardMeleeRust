@@ -81,7 +81,7 @@ impl VJoyDevice {
         }
     }
 
-    pub fn set_axis(&mut self, axis: VJoyAxis, value: f32) {
+    pub fn set_axis(&mut self, axis: VJoyAxis, value: f64) {
         match axis {
             VJoyAxis::X => self.state.wAxisX = Self::get_scaled_axis_value(value),
             VJoyAxis::Y => self.state.wAxisY = Self::get_scaled_axis_value(value),
@@ -102,15 +102,15 @@ impl VJoyDevice {
         }
     }
 
-    fn get_scaled_axis_value(value: f32) -> c_long {
+    fn get_scaled_axis_value(value: f64) -> c_long {
         let scaled_value = 0.5 * (0.626 * value + 1.0);
-        let asdf = (scaled_value * (0x8000 as f32)) as c_long;
+        let asdf = (scaled_value * (0x8000 as f64)) as c_long;
         println!("{}", asdf);
-        return (scaled_value * (0x8000 as f32)) as c_long;
+        return (scaled_value * (0x8000 as f64)) as c_long;
     }
 
-    fn get_scaled_slider_value(value: f32) -> c_long {
-        return (value * (0x8000 as f32)) as c_long;
+    fn get_scaled_slider_value(value: f64) -> c_long {
+        return (value * (0x8000 as f64)) as c_long;
     }
 
     fn v_joy_is_enabled(&self) -> bool {

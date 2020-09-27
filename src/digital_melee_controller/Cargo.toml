@@ -1,0 +1,13 @@
+[package]
+name = "digital_melee_controller"
+version = "0.1.0"
+authors = ["Corey Lehman <coreylehman@me.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "digital_melee_controller"
+path = "src/lib.rs"
+
+[dependencies]
