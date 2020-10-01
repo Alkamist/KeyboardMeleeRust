@@ -104,8 +104,6 @@ impl VJoyDevice {
 
     fn get_scaled_axis_value(value: f64) -> c_long {
         let scaled_value = 0.5 * (0.626 * value + 1.0);
-        let asdf = (scaled_value * (0x8000 as f64)) as c_long;
-        println!("{}", asdf);
         return (scaled_value * (0x8000 as f64)) as c_long;
     }
 

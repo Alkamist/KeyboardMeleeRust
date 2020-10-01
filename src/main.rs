@@ -9,17 +9,18 @@ async fn main() {
     keyboard_input::block_all_keys();
 
     let mut vjoy_device = VJoyDevice::new(1, "C:\\Program Files\\vJoy\\x64\\vJoyInterface.dll");
-    let mut controller = DigitalMeleeController::default();
+    let mut controller = DigitalMeleeController::new();
 
     let mut interval = time::interval(Duration::from_millis(1));
     loop {
+        controller.update_state();
         controller.set_action_state(Action::Left, keyboard_input::key_is_pressed(KeyboardKey::A));
         controller.set_action_state(Action::Right, keyboard_input::key_is_pressed(KeyboardKey::D));
         controller.set_action_state(Action::Down, keyboard_input::key_is_pressed(KeyboardKey::S));
         controller.set_action_state(Action::Up, keyboard_input::key_is_pressed(KeyboardKey::W));
         controller.set_action_state(Action::XMod, keyboard_input::key_is_pressed(KeyboardKey::LeftAlt));
         controller.set_action_state(Action::YMod, keyboard_input::key_is_pressed(KeyboardKey::Space));
-        controller.set_action_state(Action::YMod, keyboard_input::key_is_pressed(KeyboardKey::CapsLock));
+        controller.set_action_state(Action::Tilt, keyboard_input::key_is_pressed(KeyboardKey::CapsLock));
         controller.set_action_state(Action::CLeft, keyboard_input::key_is_pressed(KeyboardKey::L));
         controller.set_action_state(Action::CRight, keyboard_input::key_is_pressed(KeyboardKey::Slash));
         controller.set_action_state(Action::CDown, keyboard_input::key_is_pressed(KeyboardKey::Apostrophe));
@@ -41,7 +42,7 @@ async fn main() {
         controller.set_action_state(Action::DUp, keyboard_input::key_is_pressed(KeyboardKey::G));
         controller.set_action_state(Action::ChargeSmash, keyboard_input::key_is_pressed(KeyboardKey::Space));
         controller.set_action_state(Action::InvertXAxis, keyboard_input::key_is_pressed(KeyboardKey::RightShift));
-        controller.update();
+        controller.process_actions();
 
         vjoy_device.set_button(1, controller.controller_state.a_button.is_pressed);
         vjoy_device.set_button(2, controller.controller_state.b_button.is_pressed);
