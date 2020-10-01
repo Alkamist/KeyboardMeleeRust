@@ -45,6 +45,8 @@ impl DelayedButton {
         }
     }
 
+    pub fn set_delay(&mut self, delay: Duration) { self.delay = delay; }
+
     pub fn is_pressed(&self) -> bool { self.is_pressed }
     pub fn was_pressed(&self) -> bool { self.was_pressed }
     pub fn just_pressed(&self) -> bool { self.is_pressed && !self.was_pressed }

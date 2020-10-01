@@ -12,7 +12,7 @@ async fn main() {
     keyboard_input::block_all_keys();
 
     let mut vjoy_device = VJoyDevice::new(1, "C:\\Program Files\\vJoy\\x64\\vJoyInterface.dll");
-    let mut controller = DigitalMeleeController::new();
+    let mut controller = DigitalMeleeController::default();
 
     let mut interval = time::interval(Duration::from_millis(1));
     loop {
