@@ -95,6 +95,11 @@ pub struct DigitalMeleeController {
     use_c_stick_tilting: bool,
     use_extra_b_buttons: bool,
     previous_direction_is_right: bool,
+    charge_smash: bool,
+    x_mod_x: f64,
+    x_mod_y: f64,
+    y_mod_x: f64,
+    y_mod_y: f64,
 }
 
 impl DigitalMeleeController {
@@ -105,11 +110,13 @@ impl DigitalMeleeController {
 
     pub fn process_actions(&mut self) {
         self.update_axes_with_directional_buttons();
+        self.handle_modifier_angles();
         self.handle_a_stick();
         self.handle_tilt_modifier();
         self.handle_b_stick();
         self.handle_shield_tilt();
         self.handle_air_dodge_logic();
+        self.handle_charged_smashes();
         self.handle_jump_logic();
 
         self.controller_state.z_button.set_state(self.action_button(Action::Z).is_pressed());
@@ -139,6 +146,17 @@ impl DigitalMeleeController {
             self.action_button(Action::CDown).is_pressed(),
             self.action_button(Action::CUp).is_pressed(),
         );
+    }
+
+    pub fn handle_modifier_angles(&mut self) {
+        if self.action_button(Action::YMod).is_pressed() {
+            self.controller_state.x_axis.set_value(self.controller_state.x_axis.direction() * self.y_mod_x);
+            self.controller_state.y_axis.set_value(self.controller_state.y_axis.direction() * self.y_mod_y);
+        }
+        else if self.action_button(Action::XMod).is_pressed() {
+            self.controller_state.x_axis.set_value(self.controller_state.x_axis.direction() * self.x_mod_x);
+            self.controller_state.y_axis.set_value(self.controller_state.y_axis.direction() * self.x_mod_y);
+        }
     }
 
     pub fn handle_a_stick(&mut self) {
@@ -229,6 +247,23 @@ impl DigitalMeleeController {
         );
     }
 
+    pub fn handle_charged_smashes(&mut self) {
+        let c_is_pressed = self.action_button(Action::CLeft).is_pressed()
+                           || self.action_button(Action::CRight).is_pressed()
+                           || self.action_button(Action::CDown).is_pressed()
+                           || self.action_button(Action::CUp).is_pressed();
+
+        if self.action_button(Action::ChargeSmash).is_pressed() && c_is_pressed {
+            self.charge_smash = true;
+        }
+        if !c_is_pressed {
+            self.charge_smash = false;
+        }
+        if self.charge_smash {
+            self.controller_state.a_button.set_state(true);
+        }
+    }
+
     pub fn handle_jump_logic(&mut self) {
         if self.use_short_hop_macro {
             self.jump_logic.update(
@@ -260,6 +295,11 @@ impl Default for DigitalMeleeController {
             use_c_stick_tilting: true,
             use_extra_b_buttons: true,
             previous_direction_is_right: true,
+            charge_smash: false,
+            x_mod_x: 0.2875,
+            x_mod_y: 0.95,
+            y_mod_x: 0.95,
+            y_mod_y: 0.2875,
         }
     }
 }
