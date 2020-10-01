@@ -1,6 +1,6 @@
 use std::time::{Instant, Duration};
 
-use crate::gamecube_controller_state::Button;
+use crate::button::Button;
 
 pub struct JumpLogic {
     pub short_hop_output: bool,
@@ -31,10 +31,10 @@ impl Default for JumpLogic {
 
 impl JumpLogic {
     pub fn update(&mut self, short_hop: bool, full_hop: bool) {
-        self.short_hop_input.update();
-        self.full_hop_input.update();
-        self.short_hop_input.is_pressed = short_hop;
-        self.full_hop_input.is_pressed = full_hop;
+        self.short_hop_input.update_previous_state();
+        self.full_hop_input.update_previous_state();
+        self.short_hop_input.set_state(short_hop);
+        self.full_hop_input.set_state(full_hop);
 
 
         // Short hop handling.
@@ -62,7 +62,7 @@ impl JumpLogic {
             self.full_hop_time = Instant::now();
         }
 
-        if self.is_full_hopping && !self.full_hop_input.is_pressed {
+        if self.is_full_hopping && !self.full_hop_input.is_pressed() {
             if Instant::now() - self.full_hop_time >= Duration::from_millis(134) {
                 self.full_hop_output = false;
             }

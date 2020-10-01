@@ -1,6 +1,6 @@
 use std::time::{Instant, Duration};
 
-use crate::gamecube_controller_state::AnalogAxis;
+use crate::analog_axis::AnalogAxis;
 
 pub struct StickTilter {
     is_tilting: bool,
@@ -65,10 +65,10 @@ fn bipolar_max(value: f64, magnitude: f64) -> f64 {
 }
 
 fn scale_axes(axis_a: &mut AnalogAxis, axis_b: &mut AnalogAxis, scale_value: f64) {
-    let axis_a_magnitude = axis_a.value.abs();
+    let axis_a_magnitude = axis_a.value().abs();
     if axis_a_magnitude > scale_value {
         let scale_factor = scale_value / axis_a_magnitude;
-        axis_a.value = axis_a.direction() * scale_value;
-        axis_b.value = bipolar_max(axis_b.value * scale_factor, axis_b.dead_zone);
+        axis_a.set_value(axis_a.direction() * scale_value);
+        axis_b.set_value(bipolar_max(axis_b.value() * scale_factor, axis_b.dead_zone()));
     }
 }

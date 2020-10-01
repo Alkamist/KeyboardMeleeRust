@@ -1,9 +1,7 @@
 use std::time::{Instant, Duration};
 
-use crate::gamecube_controller_state::{
-    Button,
-    AnalogAxis,
-};
+use crate::button::Button;
+use crate::analog_axis::AnalogAxis;
 
 pub struct AirDodgeLogic {
     air_dodge_input: Button,
@@ -24,13 +22,13 @@ impl AirDodgeLogic {
         air_dodge: bool,
         shorten: bool,
     ) {
-        self.air_dodge_input.update();
-        self.air_dodge_input.is_pressed = air_dodge;
+        self.air_dodge_input.update_previous_state();
+        self.air_dodge_input.set_state(air_dodge);
 
-        let is_left = x_axis.is_active() && x_axis.value < 0.0;
-        let is_right = x_axis.is_active() && x_axis.value > 0.0;
-        let is_down = y_axis.is_active() && y_axis.value < 0.0;
-        let is_up = y_axis.is_active() && y_axis.value > 0.0;
+        let is_left = x_axis.is_active() && x_axis.value() < 0.0;
+        let is_right = x_axis.is_active() && x_axis.value() > 0.0;
+        let is_down = y_axis.is_active() && y_axis.value() < 0.0;
+        let is_up = y_axis.is_active() && y_axis.value() > 0.0;
         let is_sideways = (is_left || is_right) && !is_down;
         let is_diagonal = (is_left || is_right) && (is_down || is_up);
 
@@ -46,19 +44,19 @@ impl AirDodgeLogic {
         if self.is_air_dodging && !is_up {
             if Instant::now() - self.air_dodge_time < Duration::from_millis(51) {
                 if air_dodge_long {
-                    x_axis.value = x_axis.direction() * self.x_level_long;
-                    y_axis.value = self.y_level_long;
+                    x_axis.set_value(x_axis.direction() * self.x_level_long);
+                    y_axis.set_value(self.y_level_long);
                 }
                 else if air_dodge_medium {
-                    x_axis.value = x_axis.direction() * self.x_level_medium;
-                    y_axis.value = self.y_level_medium;
+                    x_axis.set_value(x_axis.direction() * self.x_level_medium);
+                    y_axis.set_value(self.y_level_medium);
                 }
                 else if air_dodge_short {
-                    x_axis.value = x_axis.direction() *  self.x_level_short;
-                    y_axis.value = self.y_level_short;
+                    x_axis.set_value(x_axis.direction() *  self.x_level_short);
+                    y_axis.set_value(self.y_level_short);
                 }
                 else if !is_down {
-                    y_axis.value = -0.3;
+                    y_axis.set_value(-0.3);
                 }
             }
             else {

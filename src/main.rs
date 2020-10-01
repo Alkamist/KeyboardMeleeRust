@@ -1,7 +1,10 @@
 use tokio::time::{self, Duration};
 use keyboard_input::{self, KeyboardKey};
 use vjoy_wrapper::{VJoyDevice, VJoyAxis};
-use digital_melee_controller::*;
+use digital_melee_controller::{
+    Action,
+    DigitalMeleeController,
+};
 
 #[tokio::main]
 async fn main() {
@@ -13,7 +16,7 @@ async fn main() {
 
     let mut interval = time::interval(Duration::from_millis(1));
     loop {
-        controller.update_state();
+        controller.update_previous_state();
         controller.set_action_state(Action::Left, keyboard_input::key_is_pressed(KeyboardKey::A));
         controller.set_action_state(Action::Right, keyboard_input::key_is_pressed(KeyboardKey::D));
         controller.set_action_state(Action::Down, keyboard_input::key_is_pressed(KeyboardKey::S));
@@ -44,22 +47,22 @@ async fn main() {
         controller.set_action_state(Action::InvertXAxis, keyboard_input::key_is_pressed(KeyboardKey::RightShift));
         controller.process_actions();
 
-        vjoy_device.set_button(1, controller.controller_state.a_button.is_pressed);
-        vjoy_device.set_button(2, controller.controller_state.b_button.is_pressed);
-        vjoy_device.set_button(3, controller.controller_state.x_button.is_pressed);
-        vjoy_device.set_button(4, controller.controller_state.y_button.is_pressed);
-        vjoy_device.set_button(5, controller.controller_state.z_button.is_pressed);
-        vjoy_device.set_button(6, controller.controller_state.l_button.is_pressed);
-        vjoy_device.set_button(7, controller.controller_state.r_button.is_pressed);
-        vjoy_device.set_button(8, controller.controller_state.start_button.is_pressed);
-        vjoy_device.set_button(9, controller.controller_state.d_left_button.is_pressed);
-        vjoy_device.set_button(10, controller.controller_state.d_up_button.is_pressed);
-        vjoy_device.set_button(11, controller.controller_state.d_right_button.is_pressed);
-        vjoy_device.set_button(12, controller.controller_state.d_down_button.is_pressed);
-        vjoy_device.set_axis(VJoyAxis::X, controller.controller_state.x_axis.value);
-        vjoy_device.set_axis(VJoyAxis::Y, controller.controller_state.y_axis.value);
-        vjoy_device.set_axis(VJoyAxis::XRotation, controller.controller_state.c_x_axis.value);
-        vjoy_device.set_axis(VJoyAxis::YRotation, controller.controller_state.c_y_axis.value);
+        vjoy_device.set_button(1, controller.controller_state.a_button.is_pressed());
+        vjoy_device.set_button(2, controller.controller_state.b_button.is_pressed());
+        vjoy_device.set_button(3, controller.controller_state.x_button.is_pressed());
+        vjoy_device.set_button(4, controller.controller_state.y_button.is_pressed());
+        vjoy_device.set_button(5, controller.controller_state.z_button.is_pressed());
+        vjoy_device.set_button(6, controller.controller_state.l_button.is_pressed());
+        vjoy_device.set_button(7, controller.controller_state.r_button.is_pressed());
+        vjoy_device.set_button(8, controller.controller_state.start_button.is_pressed());
+        vjoy_device.set_button(9, controller.controller_state.d_left_button.is_pressed());
+        vjoy_device.set_button(10, controller.controller_state.d_up_button.is_pressed());
+        vjoy_device.set_button(11, controller.controller_state.d_right_button.is_pressed());
+        vjoy_device.set_button(12, controller.controller_state.d_down_button.is_pressed());
+        vjoy_device.set_axis(VJoyAxis::X, controller.controller_state.x_axis.value());
+        vjoy_device.set_axis(VJoyAxis::Y, controller.controller_state.y_axis.value());
+        vjoy_device.set_axis(VJoyAxis::XRotation, controller.controller_state.c_x_axis.value());
+        vjoy_device.set_axis(VJoyAxis::YRotation, controller.controller_state.c_y_axis.value());
         vjoy_device.send_inputs();
 
         interval.tick().await;
