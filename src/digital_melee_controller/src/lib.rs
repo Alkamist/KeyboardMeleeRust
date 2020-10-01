@@ -1,5 +1,6 @@
 mod button;
 mod analog_axis;
+mod analog_slider;
 mod gamecube_controller_state;
 mod jump_logic;
 mod stick_tilter;
@@ -12,6 +13,7 @@ mod safe_grounded_down_b;
 
 pub use crate::button::Button;
 pub use crate::analog_axis::AnalogAxis;
+pub use crate::analog_slider::AnalogSlider;
 pub use crate::gamecube_controller_state::GameCubeControllerState;
 use crate::jump_logic::JumpLogic;
 use crate::stick_tilter::StickTilter;
@@ -101,6 +103,7 @@ pub struct DigitalMeleeController {
     use_c_stick_tilting: bool,
     use_extra_b_buttons: bool,
     previous_direction_is_right: bool,
+    is_light_shielding: bool,
     charge_smash: bool,
     x_mod_x: f64,
     x_mod_y: f64,
@@ -127,10 +130,10 @@ impl DigitalMeleeController {
         self.handle_angled_smashes();
         self.handle_charged_smashes();
         self.handle_jump_logic();
+        self.handle_shield();
 
         self.controller_state.z_button.set_state(self.action_button(Action::Z).is_pressed());
         self.controller_state.l_button.set_state(self.action_button(Action::AirDodge).is_pressed());
-        self.controller_state.r_button.set_state(self.action_button(Action::Shield).is_pressed());
         self.controller_state.start_button.set_state(self.action_button(Action::Start).is_pressed());
         self.controller_state.d_left_button.set_state(self.action_button(Action::DLeft).is_pressed());
         self.controller_state.d_right_button.set_state(self.action_button(Action::DRight).is_pressed());
@@ -338,6 +341,25 @@ impl DigitalMeleeController {
             self.controller_state.x_button.set_state(self.action_button(Action::FullHop).is_pressed());
         }
     }
+
+    pub fn handle_shield(&mut self) {
+        // Allow for a special button to toggle light shield while the shield button is held.
+        if self.action_button(Action::ToggleLightShield).just_pressed()
+        && self.action_button(Action::Shield).is_pressed() {
+            self.is_light_shielding = !self.is_light_shielding;
+        }
+        if self.action_button(Action::Shield).just_released() {
+            self.is_light_shielding = false;
+        }
+        if self.is_light_shielding {
+            self.controller_state.r_button.set_state(false);
+            self.controller_state.l_analog.set_value((43 + 1) as f64 / 255.0);
+        }
+        else {
+            self.controller_state.r_button.set_state(self.action_button(Action::Shield).is_pressed());
+            self.controller_state.l_analog.set_value(0.0);
+        }
+    }
 }
 
 impl Default for DigitalMeleeController {
@@ -357,6 +379,7 @@ impl Default for DigitalMeleeController {
             use_c_stick_tilting: true,
             use_extra_b_buttons: true,
             previous_direction_is_right: true,
+            is_light_shielding: false,
             charge_smash: false,
             x_mod_x: 0.2875,
             x_mod_y: 0.95,

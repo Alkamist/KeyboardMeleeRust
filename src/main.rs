@@ -63,6 +63,7 @@ async fn main() {
         vjoy_device.set_axis(VJoyAxis::Y, controller.controller_state.y_axis.value());
         vjoy_device.set_axis(VJoyAxis::XRotation, controller.controller_state.c_x_axis.value());
         vjoy_device.set_axis(VJoyAxis::YRotation, controller.controller_state.c_y_axis.value());
+        vjoy_device.set_axis(VJoyAxis::Slider0, controller.controller_state.l_analog.value());
         vjoy_device.send_inputs();
 
         interval.tick().await;

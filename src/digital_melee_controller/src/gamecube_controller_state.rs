@@ -1,5 +1,6 @@
 use crate::button::Button;
 use crate::analog_axis::AnalogAxis;
+use crate::analog_slider::AnalogSlider;
 
 #[derive(Default)]
 pub struct GameCubeControllerState {
@@ -19,8 +20,8 @@ pub struct GameCubeControllerState {
     pub d_right_button: Button,
     pub d_down_button: Button,
     pub d_up_button: Button,
-    //l_analog,
-    //r_analog,
+    pub l_analog: AnalogSlider,
+    pub r_analog: AnalogSlider,
 }
 
 impl GameCubeControllerState {
@@ -41,5 +42,7 @@ impl GameCubeControllerState {
         self.d_right_button.update_previous_state();
         self.d_down_button.update_previous_state();
         self.d_up_button.update_previous_state();
+        self.l_analog.update_previous_state();
+        self.r_analog.update_previous_state();
     }
 }
