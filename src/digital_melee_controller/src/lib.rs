@@ -8,6 +8,7 @@ mod delayed_button;
 mod a_stick;
 mod b_stick;
 mod backdash_out_of_crouch_fix;
+mod safe_grounded_down_b;
 
 pub use crate::button::Button;
 pub use crate::analog_axis::AnalogAxis;
@@ -18,6 +19,7 @@ use crate::air_dodge_logic::AirDodgeLogic;
 use crate::a_stick::AStick;
 use crate::b_stick::BStick;
 use crate::backdash_out_of_crouch_fix::BackdashOutOfCrouchFix;
+use crate::safe_grounded_down_b::SafeGroundedDownB;
 
 macro_rules! define_actions {
     ($($variant:ident),+) => {
@@ -94,6 +96,7 @@ pub struct DigitalMeleeController {
     a_stick: AStick,
     b_stick: BStick,
     backdash_out_of_crouch_fix: BackdashOutOfCrouchFix,
+    safe_grounded_down_b: SafeGroundedDownB,
     use_short_hop_macro: bool,
     use_c_stick_tilting: bool,
     use_extra_b_buttons: bool,
@@ -256,7 +259,16 @@ impl DigitalMeleeController {
             self.controller_state.y_axis.set_value(self.b_stick.y_axis_output());
         }
         else {
+            self.safe_grounded_down_b.update_state(
+                &self.controller_state.x_axis,
+                &self.controller_state.y_axis,
+                self.action_button(Action::B).is_pressed(),
+                self.action_button(Action::Down).is_pressed(),
+                self.action_button(Action::Up).is_pressed(),
+            );
             self.controller_state.b_button.set_state(self.action_button(Action::B).is_pressed());
+            self.controller_state.x_axis.set_value(self.safe_grounded_down_b.x_axis_output());
+            self.controller_state.y_axis.set_value(self.safe_grounded_down_b.y_axis_output());
         }
     }
 
@@ -340,6 +352,7 @@ impl Default for DigitalMeleeController {
             a_stick: Default::default(),
             b_stick: Default::default(),
             backdash_out_of_crouch_fix: Default::default(),
+            safe_grounded_down_b: Default::default(),
             use_short_hop_macro: true,
             use_c_stick_tilting: true,
             use_extra_b_buttons: true,
