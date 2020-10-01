@@ -7,6 +7,7 @@ mod air_dodge_logic;
 mod delayed_button;
 mod a_stick;
 mod b_stick;
+mod backdash_out_of_crouch_fix;
 
 pub use crate::button::Button;
 pub use crate::analog_axis::AnalogAxis;
@@ -16,6 +17,7 @@ use crate::stick_tilter::StickTilter;
 use crate::air_dodge_logic::AirDodgeLogic;
 use crate::a_stick::AStick;
 use crate::b_stick::BStick;
+use crate::backdash_out_of_crouch_fix::BackdashOutOfCrouchFix;
 
 macro_rules! define_actions {
     ($($variant:ident),+) => {
@@ -91,6 +93,7 @@ pub struct DigitalMeleeController {
     air_dodge_logic: AirDodgeLogic,
     a_stick: AStick,
     b_stick: BStick,
+    backdash_out_of_crouch_fix: BackdashOutOfCrouchFix,
     use_short_hop_macro: bool,
     use_c_stick_tilting: bool,
     use_extra_b_buttons: bool,
@@ -110,12 +113,15 @@ impl DigitalMeleeController {
 
     pub fn process_actions(&mut self) {
         self.update_axes_with_directional_buttons();
+        self.handle_x_axis_inversion();
+        self.handle_backdash_out_of_crouch_fix();
         self.handle_modifier_angles();
         self.handle_a_stick();
         self.handle_tilt_modifier();
         self.handle_b_stick();
         self.handle_shield_tilt();
         self.handle_air_dodge_logic();
+        self.handle_angled_smashes();
         self.handle_charged_smashes();
         self.handle_jump_logic();
 
@@ -146,6 +152,36 @@ impl DigitalMeleeController {
             self.action_button(Action::CDown).is_pressed(),
             self.action_button(Action::CUp).is_pressed(),
         );
+    }
+
+    pub fn handle_x_axis_inversion(&mut self) {
+        if self.action_button(Action::InvertXAxis).is_pressed() {
+            self.controller_state.x_axis.set_value(-self.controller_state.x_axis.value());
+        }
+    }
+
+    pub fn handle_backdash_out_of_crouch_fix(&mut self) {
+        self.backdash_out_of_crouch_fix.update_state(
+            &self.controller_state.x_axis,
+            self.action_button(Action::Left).is_pressed(),
+            self.action_button(Action::Right).is_pressed(),
+            self.action_button(Action::Down).is_pressed(),
+        );
+
+        // Only fix backdash out of crouch if you are not doing anything else important.
+        if !(self.action_button(Action::FullHop).is_pressed()
+         || self.action_button(Action::ShortHop).is_pressed()
+         || self.action_button(Action::AirDodge).is_pressed()
+         || self.action_button(Action::Shield).is_pressed()
+         || self.action_button(Action::Z).is_pressed()
+         || self.action_button(Action::A).is_pressed()
+         || self.action_button(Action::B).is_pressed()
+         || self.action_button(Action::BSide).is_pressed()
+         || self.action_button(Action::BUp).is_pressed()
+         || self.action_button(Action::Tilt).is_pressed()) {
+
+            self.controller_state.x_axis.set_value(self.backdash_out_of_crouch_fix.x_axis_output());
+        }
     }
 
     pub fn handle_modifier_angles(&mut self) {
@@ -247,6 +283,18 @@ impl DigitalMeleeController {
         );
     }
 
+    pub fn handle_angled_smashes(&mut self) {
+        let c_angled = (self.action_button(Action::CLeft).is_pressed()
+                     || self.action_button(Action::CRight).is_pressed())
+                     &&
+                       (self.action_button(Action::Down).is_pressed()
+                     || self.action_button(Action::Up).is_pressed());
+
+        if c_angled && !self.action_button(Action::Tilt).is_pressed() {
+            self.controller_state.c_y_axis.set_value(self.controller_state.y_axis.direction() * 0.4);
+        }
+    }
+
     pub fn handle_charged_smashes(&mut self) {
         let c_is_pressed = self.action_button(Action::CLeft).is_pressed()
                            || self.action_button(Action::CRight).is_pressed()
@@ -291,6 +339,7 @@ impl Default for DigitalMeleeController {
             air_dodge_logic: Default::default(),
             a_stick: Default::default(),
             b_stick: Default::default(),
+            backdash_out_of_crouch_fix: Default::default(),
             use_short_hop_macro: true,
             use_c_stick_tilting: true,
             use_extra_b_buttons: true,
