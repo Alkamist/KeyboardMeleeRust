@@ -14,7 +14,12 @@ mod safe_grounded_down_b;
 pub use crate::button::Button;
 pub use crate::analog_axis::AnalogAxis;
 pub use crate::analog_slider::AnalogSlider;
-pub use crate::gamecube_controller_state::GameCubeControllerState;
+pub use crate::gamecube_controller_state::{
+    GameCubeControllerButton,
+    GameCubeControllerAxis,
+    GameCubeControllerSlider,
+    GameCubeControllerState,
+};
 use crate::jump_logic::JumpLogic;
 use crate::stick_tilter::StickTilter;
 use crate::air_dodge_logic::AirDodgeLogic;
@@ -26,7 +31,7 @@ use crate::safe_grounded_down_b::SafeGroundedDownB;
 macro_rules! define_actions {
     ($($variant:ident),+) => {
         #[allow(dead_code)]
-        #[derive(Debug, Copy, Clone)]
+        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
         pub enum Action {
             $($variant,)+
         }

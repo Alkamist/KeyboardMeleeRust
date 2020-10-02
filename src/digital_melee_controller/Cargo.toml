@@ -11,3 +11,4 @@ name = "digital_melee_controller"
 path = "src/lib.rs"
 
 [dependencies]
+libloading = "0.6"

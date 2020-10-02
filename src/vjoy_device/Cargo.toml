@@ -1,5 +1,5 @@
 [package]
-name = "vjoy_wrapper"
+name = "vjoy_device"
 version = "0.1.0"
 authors = ["Corey Lehman <coreylehman@me.com>"]
 edition = "2018"
@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "vjoy_wrapper"
+name = "vjoy_device"
 path = "src/lib.rs"
 
 [dependencies]

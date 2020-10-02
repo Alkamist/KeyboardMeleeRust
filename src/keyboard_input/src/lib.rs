@@ -13,7 +13,7 @@ use winapi::{
     um::winuser::*,
 };
 
-pub fn initialize() {
+pub fn start_hook() {
     thread::spawn(move || {
         unsafe {
             SetWindowsHookExW(WH_KEYBOARD_LL, Some(keyboard_hook), 0 as HINSTANCE, 0);
@@ -76,7 +76,7 @@ struct KeyState {
 macro_rules! keyboard {
     ($($key_name:ident: $keycode:expr),+) => {
         #[allow(dead_code)]
-        #[derive(Debug, Copy, Clone)]
+        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
         pub enum KeyboardKey {
             $($key_name),+
         }
