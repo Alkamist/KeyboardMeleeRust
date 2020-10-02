@@ -138,11 +138,19 @@ impl KeyboardMeleeControllerConfig {
         let output_config: KeyboardMeleeControllerConfig;
 
         if let Ok(config_string) = fs::read_to_string(file_name) {
-            output_config = serde_json::from_str(&config_string).unwrap();
+            match serde_json::from_str(&config_string) {
+                Ok(value) => output_config = value,
+                Err(e) => {
+                    println!("Could not parse config.json, loading default config:\n {}", e);
+                    output_config = KeyboardMeleeControllerConfig::default();
+                }
+            }
         }
         else {
             output_config = KeyboardMeleeControllerConfig::default();
-            output_config.save("config.json").unwrap();
+            if let Err(e) = output_config.save("config.json") {
+                println!("Could not save config.json:\n {}", e);
+            }
         }
 
         output_config
@@ -173,8 +181,8 @@ impl KeyboardMeleeControllerConfig {
         binds.insert(Action::FullHop, vec![KeyboardKey::BackSlash]);
         binds.insert(Action::A, vec![KeyboardKey::RightWindows]);
         binds.insert(Action::B, vec![KeyboardKey::RightAlt]);
-        binds.insert(Action::BUp, vec![KeyboardKey::Backspace]);
-        binds.insert(Action::BSide, vec![KeyboardKey::Enter]);
+        binds.insert(Action::BUp, vec![KeyboardKey::Period]);
+        binds.insert(Action::BSide, vec![KeyboardKey::Backspace]);
         binds.insert(Action::Z, vec![KeyboardKey::Equals]);
         binds.insert(Action::Shield, vec![KeyboardKey::RightBracket]);
         binds.insert(Action::ToggleLightShield, vec![KeyboardKey::Space]);
@@ -185,7 +193,7 @@ impl KeyboardMeleeControllerConfig {
         binds.insert(Action::DDown, vec![KeyboardKey::B]);
         binds.insert(Action::DUp, vec![KeyboardKey::G]);
         binds.insert(Action::ChargeSmash, vec![KeyboardKey::Space]);
-        binds.insert(Action::InvertXAxis, vec![KeyboardKey::RightShift]);
+        binds.insert(Action::InvertXAxis, vec![KeyboardKey::Enter]);
         binds
     }
 
