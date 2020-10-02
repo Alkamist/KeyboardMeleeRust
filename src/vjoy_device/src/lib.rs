@@ -6,6 +6,8 @@ use std::os::raw::{
     c_uint,
 };
 
+use serde::{Serialize, Deserialize};
+
 #[allow(non_snake_case)]
 #[repr(C)]
 #[derive(Default, Copy, Clone)]
@@ -42,14 +44,16 @@ struct JoystickPositionV2 {
     lButtonsEx3: c_long, // Buttons 97-128
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum VJoyAxis {
     X,
     Y,
     Z,
     XRotation,
     YRotation,
+    ZRotation,
     Slider0,
+    Slider1,
 }
 
 pub struct VJoyDevice {
@@ -88,7 +92,9 @@ impl VJoyDevice {
             VJoyAxis::Z => self.state.wAxisZ = Self::get_scaled_axis_value(value),
             VJoyAxis::XRotation => self.state.wAxisXRot = Self::get_scaled_axis_value(value),
             VJoyAxis::YRotation => self.state.wAxisYRot = Self::get_scaled_axis_value(value),
+            VJoyAxis::ZRotation => self.state.wAxisZRot = Self::get_scaled_axis_value(value),
             VJoyAxis::Slider0 => self.state.wSlider = Self::get_scaled_slider_value(value),
+            VJoyAxis::Slider1 => self.state.wSlider = Self::get_scaled_slider_value(value),
         }
     }
 

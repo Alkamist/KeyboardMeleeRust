@@ -11,6 +11,8 @@ mod b_stick;
 mod backdash_out_of_crouch_fix;
 mod safe_grounded_down_b;
 
+use serde::{Serialize, Deserialize};
+
 pub use crate::button::Button;
 pub use crate::analog_axis::AnalogAxis;
 pub use crate::analog_slider::AnalogSlider;
@@ -31,7 +33,7 @@ use crate::safe_grounded_down_b::SafeGroundedDownB;
 macro_rules! define_actions {
     ($($variant:ident),+) => {
         #[allow(dead_code)]
-        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
         pub enum Action {
             $($variant,)+
         }

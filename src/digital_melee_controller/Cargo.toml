@@ -12,3 +12,4 @@ path = "src/lib.rs"
 
 [dependencies]
 libloading = "0.6"
+serde = { version = "1.0", features = ["derive"] }

@@ -1,8 +1,10 @@
+use serde::{Serialize, Deserialize};
+
 use crate::button::Button;
 use crate::analog_axis::AnalogAxis;
 use crate::analog_slider::AnalogSlider;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameCubeControllerButton {
     A,
     B,
@@ -18,7 +20,7 @@ pub enum GameCubeControllerButton {
     DDown,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameCubeControllerAxis {
     X,
     Y,
@@ -26,7 +28,7 @@ pub enum GameCubeControllerAxis {
     CY,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameCubeControllerSlider {
     L,
     R,

@@ -1,7 +1,7 @@
-extern crate winapi;
-
 #[macro_use]
 extern crate lazy_static;
+
+use serde::{Serialize, Deserialize};
 
 use std::thread;
 use std::ptr::null_mut;
@@ -76,7 +76,7 @@ struct KeyState {
 macro_rules! keyboard {
     ($($key_name:ident: $keycode:expr),+) => {
         #[allow(dead_code)]
-        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
         pub enum KeyboardKey {
             $($key_name),+
         }
@@ -281,7 +281,7 @@ keyboard!(
     Semicolon: 186,
     Equals: 187,
     Comma: 188,
-    Hyphen: 189,
+    Minus: 189,
     Period: 190,
     Slash: 191,
     Grave: 192,
