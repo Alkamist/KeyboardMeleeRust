@@ -8,5 +8,4 @@ edition = "2018"
 
 [dependencies]
 keyboard_melee_controller = { path = "src/keyboard_melee_controller", version = "0.1" }
-#tokio = { version = "0.2", features = ["time", "macros"] }
-iced = { git = "https://github.com/hecrj/iced", rev = "c393e450a1e314873667edb32e9ea3775d595c94", features = ["tokio"] }
+tokio = { version = "0.2", features = ["time", "macros"] }
