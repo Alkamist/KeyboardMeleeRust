@@ -3,7 +3,6 @@ use std::fs::{self, File};
 use std::io::prelude::*;
 
 use serde::{Serialize, Deserialize};
-use tokio::time::{self, Duration};
 use keyboard_input::{self, KeyboardKey};
 use vjoy_device::{VJoyDevice, VJoyAxis};
 use digital_melee_controller::{
@@ -38,16 +37,12 @@ impl KeyboardMeleeController {
         }
     }
 
-    pub async fn run(&mut self) {
-        let mut interval = time::interval(Duration::from_millis(1));
-        loop {
-            self.update_controller_state_with_keys();
-            self.update_vjoy_device_buttons();
-            self.update_vjoy_device_axes();
-            self.update_vjoy_device_sliders();
-            self.vjoy_device.send_inputs();
-            interval.tick().await;
-        }
+    pub fn update(&mut self) {
+        self.update_controller_state_with_keys();
+        self.update_vjoy_device_buttons();
+        self.update_vjoy_device_axes();
+        self.update_vjoy_device_sliders();
+        self.vjoy_device.send_inputs();
     }
 
     fn update_controller_state_with_keys(&mut self) {
